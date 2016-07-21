@@ -4,6 +4,7 @@
 使用方法
 1.  引入头文件 #import "UIScrollView+_DScrollView.h"
 
-2.   Scrollview 设置  xxx.dScrollView = YES; 即可实现3d 效果
+2.   - (void)make3Dscrollview; // 调用此方法实现3D效果
+
 
 
