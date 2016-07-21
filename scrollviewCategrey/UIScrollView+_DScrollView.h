@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface UIScrollView (_DScrollView)
-@property(nonatomic,assign)BOOL dScrollView;
+@property(nonatomic,assign)BOOL dScrollView;   // 当前属性设置位置必须位于添加子视图之后
 @property(nonatomic,assign)NSUInteger pageNum;
 @property(nonatomic,assign)CGFloat rightScale;
 @property(nonatomic,assign)CGFloat leftScale;
