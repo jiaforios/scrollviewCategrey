@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "UIScrollView+_DScrollView.h"
+#import <objc/runtime.h>
 @interface ViewController ()<UIScrollViewDelegate>
 @property(nonatomic,strong)UIScrollView *sc;
 @end
@@ -38,12 +39,45 @@
      *  添加 3d 效果
      */
     
-    _sc.dScrollView = YES;
+    [_sc make3Dscrollview];
+    unsigned int count = 0;
+    Ivar *ivars = class_copyIvarList([_sc class], &count);
+    
+    for (int i = 0; i < count; i++) {
+        Ivar ivar = ivars[i];
+        const char *name = ivar_getName(ivar);
+        NSString *ocName = [NSString stringWithUTF8String:name];
+        NSLog(@"ocName = %@ ",ocName);
+    }
+    
     
     
     [self.view addSubview:_sc];
 
+
+    UIScrollView *sc2 = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 380, 375, 200)];
+    
+    for (int i=0; i<9; i++) {
+        
+        UIView *view =[[UIView alloc] initWithFrame:CGRectMake(i *375, 0, 375, 200)];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 100, 20)];
+        label.text = [@(i) stringValue];
+        [view addSubview:label];
+        view.backgroundColor = [UIColor colorWithRed:arc4random()%256/255. green:arc4random()%256/255. blue:arc4random()%256/255. alpha:1];
+        [sc2 addSubview:view];
+    }
+    
+    sc2.contentSize = CGSizeMake(375*9, 0);
+
+//    [sc2 make3Dscrollview];
+    
+    [self.view addSubview:sc2];
+    
+    
+    
+    
 }
+
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {

@@ -14,4 +14,7 @@
 @property(nonatomic,assign)CGFloat rightScale;
 @property(nonatomic,assign)CGFloat leftScale;
 
+- (void)make3Dscrollview; // 调用此方法实现3D效果
+
+
 @end

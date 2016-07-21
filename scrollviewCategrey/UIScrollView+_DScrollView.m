@@ -23,14 +23,13 @@ CGFloat _scaleFloat = 0.25;
 BOOL dscroll = NO;
 NSUInteger _leftPagenum;  // 左侧的页码
 NSUInteger _rigthPagenum;  // 右侧的页码
-
 NSMutableArray *mArray;
 
 
-// 将 self.dScrollView 配置在setNeedLayout 中 提高植入效果，不需要再限制 配置位置
-- (void)setNeedsLayout
+
+- (void)make3Dscrollview
 {
-   self.dScrollView = dscroll;
+    self.dScrollView = YES;
 }
 
 - (void)setDScrollView:(BOOL)dScrollView
@@ -72,12 +71,21 @@ NSMutableArray *mArray;
                [self removeObserver:self forKeyPath:keypath];
             }
         }
-
         
-        [self addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];
+        
+            [self addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];
+        
     }else
     {
         
+        // tabview 继承 scrollview 会导致观察者引起奔溃
+        NSString *classname = NSStringFromClass([self class]);
+        
+        if (![classname isEqualToString:@"UIScrollView"]) {
+            
+            return;
+        }
+
         id observer = [self observationInfo];
         NSArray *observerArr = [observer valueForKeyPath:@"_observances"];
         for (id obser in observerArr) {
@@ -163,20 +171,39 @@ NSMutableArray *mArray;
 }
 
 
+// 组合效果
 -(CATransform3D)transFormFrom:(CGFloat)position
 {
     CGFloat chaFloat=[self positiveFloatFrom:(position-CGRectGetMidX(self.bounds))/self.bounds.size.width];
+    
+//    NSLog(@"chafloat = %f",chaFloat);
     CGFloat angel=(position-CGRectGetMidX(self.bounds))/self.bounds.size.width*M_PI/10;
-    CGFloat latx;
-    latx = 0;
-    CATransform3D transformlat=CATransform3DMakeTranslation(latx, 0, 0);
+
+    CATransform3D transformlat=CATransform3DMakeTranslation(0, 0, 0);
     CATransform3D transformRotation = CATransform3DIdentity;
     transformRotation.m34= -1/230.0;
     transformRotation=CATransform3DRotate(transformRotation,angel, 0, 1, 0);
     CATransform3D transformScale=CATransform3DMakeScale(1-chaFloat*_scaleFloat, 1-chaFloat*_scaleFloat,1);
+    
     return CATransform3DConcat(CATransform3DConcat(transformRotation, transformScale), transformlat);
     
 }
+
+CATransform3D CATransform3DMakePerspective(CGPoint center, float disZ)
+{
+    CATransform3D transToCenter = CATransform3DMakeTranslation(-center.x, -center.y, 0);
+    CATransform3D transBack = CATransform3DMakeTranslation(center.x, center.y, 0);
+    CATransform3D scale = CATransform3DIdentity;
+    scale.m34 = -1.0f/disZ;
+    
+    return CATransform3DConcat(CATransform3DConcat(transToCenter, scale), transBack);
+}
+
+CATransform3D CATransform3DPerspect(CATransform3D t, CGPoint center, float disZ)
+{
+    return CATransform3DConcat(t, CATransform3DMakePerspective(center, disZ));
+}
+
 
 -(CGFloat)positiveFloatFrom:(CGFloat)fromFloat
 {
