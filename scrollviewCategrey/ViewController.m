@@ -47,7 +47,7 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    NSLog(@"scoage = %lu",(unsigned long)scrollView.pageNum);
+    NSLog(@"page = %lu",(unsigned long)scrollView.pageNum);
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
